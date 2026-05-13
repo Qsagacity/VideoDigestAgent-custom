@@ -31,6 +31,15 @@ def _save_channel_cache(cache: dict) -> None:
 
 def _resolve_channel_id(youtube, handle: str) -> str:
     """Resolve a channel handle to a channel ID, with disk caching."""
+
+    handle = handle.strip().lstrip("@")
+
+    # Google Takeout exports channel IDs like UC...
+    # If it is already a channel ID, use it directly.
+    if handle.startswith("UC"):
+        logger.info("Using channel ID directly: %s", handle)
+        return handle
+
     cache = _load_channel_cache()
     if handle in cache:
         logger.debug("Channel cache hit: @%s -> %s", handle, cache[handle])

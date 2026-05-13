@@ -411,12 +411,32 @@ def _classify(title: str, transcript: str) -> dict:
 
 
 def _get_summary_prompt(classification: dict) -> str:
-    """Step 2: Select the right prompt based on content type."""
+    """Use clean transcript prompt directly, bypassing category templates."""
     content_type = classification.get("content_type", "general")
-    prompt = PROMPT_TEMPLATES.get(content_type, GENERAL_PROMPT)
-    logger.info("Step 2: Using '%s' prompt template", content_type)
-    return prompt
+    logger.info("Step 2: Classified as '%s', but using clean transcript prompt", content_type)
 
+    return """
+请整理下面的视频转录文本。文本可能存在乱码、断句混乱、重复词、语音识别错误或中英混杂。
+
+要求：
+1. 尽量保持原文信息、原有顺序和表达逻辑，不要省略重要内容。
+2. 清理明显乱码、重复词和识别错误，但不要编造原文没有的信息。
+3. 在整理后的内容中添加小标题，帮助理解结构。
+4. 将重点观点、关键事件（背景、主角、事情+结果）、关键判断、重要数据用 Markdown 加粗。
+5. 在文末增加「重点内容总结」，总结这个视频的主要观点、关键事件（背景、主角、事情+结果）和最值得记住的内容。
+
+输出格式：
+
+# 整理后的原文内容
+
+## 小标题
+整理后的正文……
+
+# 重点内容总结
+- 主要观点
+- 关键事件（背景、主角、事情+结果）
+- 最值得记住的内容
+"""
 
 def _add_language(prompt: str, language: str) -> str:
     """Add language instruction to a prompt."""
@@ -429,14 +449,8 @@ def _add_language(prompt: str, language: str) -> str:
 
 
 def _add_transcript_context(prompt: str) -> str:
-    """Add speech-to-text awareness to all prompts."""
-    return (
-        prompt
-        + "\n\nNote: This transcript may come from speech-to-text and contain "
-        "errors. Infer correct names and terms from context. If you are unsure "
-        "about a specific name, number, or term, mark it with [?]."
-    )
-
+    """Do not append extra prompt; clean transcript prompt already contains all requirements."""
+    return prompt
 
 def _verify(transcript: str, summary: str) -> str:
     """Step 4: Verify summary accuracy against transcript."""

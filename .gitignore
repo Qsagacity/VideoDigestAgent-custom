@@ -8,3 +8,16 @@ venv/
 .venv/
 audio_tmp/
 summaries/
+
+# Local secrets and runtime files
+.env
+.venv/
+transcripts/
+*.bak
+*.bak.*
+__pycache__/
+*.pyc
+*.log
+channel_cache.json
+history.json
+failed_videos.json

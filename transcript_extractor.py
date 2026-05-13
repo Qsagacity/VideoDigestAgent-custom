@@ -1,3 +1,32 @@
+
+# ---- Force proxy for YouTube transcript/audio extraction ----
+# This makes youtube-transcript-api and yt-dlp use the proxy defined in .env.
+import os as _proxy_os
+from dotenv import dotenv_values as _proxy_dotenv_values
+
+_proxy_cfg = _proxy_dotenv_values(".env")
+_PROXY_URL = (
+    _proxy_cfg.get("HTTPS_PROXY")
+    or _proxy_cfg.get("https_proxy")
+    or _proxy_cfg.get("HTTP_PROXY")
+    or _proxy_cfg.get("http_proxy")
+    or _proxy_os.environ.get("HTTPS_PROXY")
+    or _proxy_os.environ.get("https_proxy")
+    or _proxy_os.environ.get("HTTP_PROXY")
+    or _proxy_os.environ.get("http_proxy")
+)
+
+if _PROXY_URL:
+    _proxy_os.environ["HTTP_PROXY"] = _PROXY_URL
+    _proxy_os.environ["HTTPS_PROXY"] = _PROXY_URL
+    _proxy_os.environ["http_proxy"] = _PROXY_URL
+    _proxy_os.environ["https_proxy"] = _PROXY_URL
+    _proxy_os.environ["NO_PROXY"] = "openrouter.ai,api.openrouter.ai,localhost,127.0.0.1"
+    _proxy_os.environ["no_proxy"] = "openrouter.ai,api.openrouter.ai,localhost,127.0.0.1"
+
+_YOUTUBE_PROXIES = {"http": _PROXY_URL, "https": _PROXY_URL} if _PROXY_URL else None
+# ---- End force proxy block ----
+
 """Extract transcripts from YouTube and Bilibili videos.
 
 Strategy:
@@ -30,9 +59,9 @@ def _get_youtube_captions(video_id: str) -> str | None:
         transcript_list = ytt.list(video_id)
 
         try:
-            transcript = transcript_list.find_transcript(["en"])
+            transcript = transcript_list.find_transcript(["zh", "zh-Hans", "zh-CN", "zh-TW", "zh-Hant", "en"])
         except Exception:
-            transcript = transcript_list.find_generated_transcript(["en"])
+            transcript = transcript_list.find_generated_transcript(["zh", "zh-Hans", "zh-CN", "zh-TW", "zh-Hant", "en"])
 
         entries = transcript.fetch()
         text = " ".join(entry.text for entry in entries)
@@ -67,6 +96,7 @@ def _transcribe_with_whisper(video_id: str, url: str | None = None) -> str:
         # Download audio
         logger.info("Downloading audio for %s...", video_id)
         ydl_opts = {
+            "proxy": _PROXY_URL,
             "format": "bestaudio/best",
             "outtmpl": os.path.join(AUDIO_TMP_DIR, f"{safe_id}.%(ext)s"),
             "postprocessors": [{

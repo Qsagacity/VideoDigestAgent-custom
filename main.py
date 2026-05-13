@@ -178,6 +178,15 @@ def process_video(video: dict, dry_run: bool = False) -> None:
             transcript = get_bilibili_transcript(bvid)
         else:
             transcript = get_transcript(vid_id)
+
+        # Save raw transcript before summarization for debugging and reuse.
+        from pathlib import Path
+        transcript_dir = Path("transcripts")
+        transcript_dir.mkdir(exist_ok=True)
+        safe_vid_id = vid_id.replace(":", "_").replace("/", "_")
+        transcript_path = transcript_dir / f"{platform}_{safe_vid_id}.txt"
+        transcript_path.write_text(transcript, encoding="utf-8")
+        logger.info("Saved transcript to %s (%d characters)", transcript_path, len(transcript))
     except RuntimeError as e:
         logger.warning("Skipping %s — %s", vid_id, e)
         mark_failed(vid_id, title, channel, str(e), source=source, platform=platform)
@@ -197,7 +206,7 @@ def process_video(video: dict, dry_run: bool = False) -> None:
             send_summary_email(
                 title, vid_id, summaries, channel, content_type,
                 platform=platform,
-                transcript=transcript,
+                transcript="",  # do not append raw transcript; model summary contains cleaned text
             )
         except Exception as e:
             logger.error("Email failed for %s: %s", vid_id, e)
