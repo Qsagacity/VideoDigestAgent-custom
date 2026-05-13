@@ -1,33 +1,122 @@
-# Video Digest Agent
+# Video Digest Agent Custom
 
-Automatically monitors **YouTube channels**, **YouTube keyword searches**, and **Bilibili user spaces** for new videos, extracts transcripts, **auto-detects the content type** (stocks, crypto, podcast, tech review, education, news, etc.), generates tailored summaries using your choice of LLM (Gemini, OpenAI, or Claude), and delivers them via email, local file, or both.
+这是一个基于 VideoDigestAgent--Feishu 二次定制的视频内容整理 Agent，用于自动追踪 YouTube 博主的新视频，提取视频字幕，并通过大模型生成结构化邮件内容。
 
-Includes a **web UI** for point-and-click configuration and one-click runs, as well as a CLI for automation and scripting.
+原项目已经具备“视频监控、字幕提取、LLM 总结、邮件发送”的基础链路，但在实际使用中，我发现它更偏向“短摘要生成”。对于长视频、中文视频、播客类内容和深度科技商业内容，原项目存在几个明显缺口：
 
-## How It Works
+1. **总结深度不足**：原模板更偏向快速摘要，例如产品概述、优缺点、TL;DR，难以还原视频的完整论证过程。
+2. **中文视频适配不足**：部分中文频道只有中文字幕，原逻辑优先查找英文字幕，容易失败或退回到 Whisper 转录，导致速度慢、资源消耗高。
+3. **原文复用能力弱**：原始 transcript 没有被系统化保存，不方便后续排查、复用或沉淀到知识库。
+4. **邮件内容可读性不足**：原项目会把原始字幕直接附在邮件后面，信息量大但结构混乱，用户仍然需要二次整理。
+5. **云端运行稳定性不足**：在腾讯云等云服务器上访问 YouTube 时，容易因为云厂商 IP 被限制而导致字幕提取失败。
 
-The app uses an **agent-based pipeline** to produce accurate, content-aware summaries:
+因此，我对项目进行了定制化改造，使它更适合 AI 产品经理、科技商业研究、长视频内容沉淀等使用场景。
 
-```
-1. DISCOVER  — Fetches new uploads from YouTube channels, search results, or Bilibili users
-2. CLASSIFY  — Detects video type (stock analysis? podcast? tutorial?)
-3. PROMPT    — Selects the best summary template for that content type
-4. SUMMARIZE — Generates a structured summary via LLM
-5. VERIFY    — (Optional) Second LLM pass to catch errors & hallucinations
-```
+## 我的定制优化
 
-## Supported Content Types
+### 1. 从“短摘要”升级为“转录稿整理 + 重点总结”
 
-| Type | What you get |
-|------|-------------|
-| **Stock Analysis** | Sentiment score, tickers, bull/bear thesis, price targets, conviction levels |
-| **Macro Economics** | Economic outlook, indicators, central bank commentary, sector views |
-| **Crypto** | Market sentiment, token analysis, on-chain signals |
-| **Podcast/Interview** | Guest bios, discussion points, notable quotes, contrarian views |
-| **Tech Review** | Specs, pros/cons, comparisons, verdict |
-| **Educational** | Core concepts, step-by-step process, pitfalls, key takeaways |
-| **News** | Key facts, perspectives, implications |
-| **General** | Auto-structured summary adapted to content |
+原项目会根据视频类型套用不同摘要模板，例如科技评测、教育内容、新闻、播客等。但这些模板更适合快速浏览，不适合深度内容沉淀。
+
+我将总结逻辑改为：
+
+提取视频字幕
+→ 整理转录文本
+→ 添加小标题
+→ 加粗重点观点、关键事件、关键判断和重要数据
+→ 在文末生成重点内容总结
+
+新的输出更接近一份可直接阅读的结构化文字稿，而不是简单摘要。
+
+### 2. 提升中文视频处理效率
+
+针对硅谷101、小Lin说、中文科技访谈等中文频道，我将字幕提取逻辑改为优先读取中文字幕：
+
+- zh
+- zh-Hans
+- zh-CN
+- zh-TW
+- zh-Hant
+- en
+
+这样可以减少不必要的 Whisper 本地转录。对于长视频来说，直接读取 YouTube 字幕比下载音频再转录更快、更稳定，也更节省服务器资源。
+
+### 3. 自动保存 transcript，提升可排查和复用能力
+
+项目现在会在每次处理视频后自动保存原始 transcript：
+
+transcripts/youtube_<video_id>.txt
+
+这带来三个好处：
+
+- 总结质量不理想时，可以回看原始 transcript 排查问题
+- 可以后续换模型重新总结
+- 可以作为知识库、RAG 或内容归档的数据来源
+
+这让项目从“只发一次邮件的工具”升级为可以持续沉淀内容资产的工作流。
+
+### 4. 邮件不再直接附加混乱原始字幕
+
+原项目会在邮件末尾附上 Original Transcript，但原始字幕通常没有段落、没有标题、断句混乱，可读性较差。
+
+我改造后，邮件正文直接发送大模型整理后的内容：
+
+整理后的原文内容
++ 小标题
++ 重点加粗
++ 重点内容总结
+
+这样用户收到邮件后可以直接阅读，不需要再手动复制到大模型中二次整理。
+
+### 5. 增强云服务器部署稳定性
+
+在腾讯云 Ubuntu 服务器上运行时，YouTube 可能因为云厂商 IP 被限制而无法稳定提取字幕。
+
+我增加了代理环境支持，使项目可以通过代理访问 YouTube，提高云端长期运行的稳定性。
+
+同时通过 .gitignore 避免上传敏感和运行文件，例如：
+
+- .env
+- API Key
+- 邮箱授权码
+- 代理账号密码
+- transcript 文件
+- 虚拟环境和缓存文件
+
+## 改造后的工作流
+
+定时监控 YouTube 频道
+→ 发现新视频
+→ 提取视频字幕 / transcript
+→ 保存原始 transcript 到本地
+→ 调用大模型整理转录稿
+→ 添加小标题、重点加粗、关键事件总结
+→ 通过 QQ 邮箱发送整理后的内容
+
+## 改造价值
+
+这次定制不是简单改 prompt，而是围绕实际使用中的内容消费效率做优化。
+
+原项目更像一个“视频摘要工具”，而定制后更接近一个“视频内容整理 Agent”。它弥补了原项目在中文视频、长视频、深度内容沉淀、邮件可读性和云端稳定性上的不足。
+
+主要提升了三类效率：
+
+1. **信息获取效率**  
+   不需要每天手动打开 YouTube 检查博主更新，系统会自动追踪并处理新视频。
+
+2. **内容理解效率**  
+   邮件不再只是短摘要，而是整理后的结构化文字稿，可以快速理解视频主线、关键事件和核心判断。
+
+3. **知识沉淀效率**  
+   transcript 被自动保存，整理后的内容也通过邮件沉淀，后续可以继续用于复盘、面试准备、行业研究或知识库建设。
+
+## 适用场景
+
+- AI 产品经理日常追踪 AI 工具、模型和 Agent 趋势
+- 科技商业类 YouTube 视频自动整理
+- 中文长视频 / 播客内容沉淀
+- 海外 AI 博主内容追踪
+- 自动化邮件简报工作流
 
 ## Setup
 
