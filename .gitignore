@@ -21,3 +21,25 @@ __pycache__/
 channel_cache.json
 history.json
 failed_videos.json
+
+# Local secrets
+.env
+.env.*
+*.env
+
+# Runtime files
+logs/
+digest_archive/
+transcripts/
+summaries/
+audio_tmp/
+processed_videos.json
+channel_cache.json
+__pycache__/
+*.pyc
+
+# Local code backups
+category_digest.py.bak.*
+category_digest.py.bad.*
+category_digest.py.broken.*
+category_digest.py.save
