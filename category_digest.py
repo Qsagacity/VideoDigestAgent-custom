@@ -34,6 +34,7 @@ from googleapiclient.discovery import build
 import config
 from youtube_monitor import get_new_videos
 from transcript_extractor import get_transcript, get_bilibili_transcript
+from content_resolver import resolve_video_text
 from summarizer import _llm_call
 from history import mark_sent, mark_failed, save_summary_to_file
 
@@ -1107,11 +1108,22 @@ def process_video_for_digest(video, cycle_dir):
     logger.info("Processing for category digest: %s", title)
 
     try:
-        if platform == "bilibili":
-            bvid = video.get("bvid") or vid_id.replace("bilibili:", "")
-            transcript = get_bilibili_transcript(bvid)
-        else:
-            transcript = get_transcript(vid_id)
+        resolved = resolve_video_text(video)
+        transcript = resolved["text"]
+        video["resolved_source_type"] = resolved.get("source_type", "")
+        video["resolved_source_url"] = resolved.get("source_url", "")
+        video["resolved_match_type"] = resolved.get("match_type", "")
+        video["resolved_confidence"] = resolved.get("confidence", 0)
+        video["resolved_risk_level"] = resolved.get("risk_level", "")
+        transcript = (
+            "【内容来源说明】\n"
+            f"- source_type: {video.get('resolved_source_type')}\n"
+            f"- match_type: {video.get('resolved_match_type')}\n"
+            f"- confidence: {video.get('resolved_confidence')}\n"
+            f"- risk_level: {video.get('resolved_risk_level')}\n"
+            f"- source_url: {video.get('resolved_source_url')}\n\n"
+            + transcript
+        )
 
         safe_vid = safe_filename(f"{platform}_{vid_id}")
         transcript_path = cycle_dir / "transcripts" / f"{safe_vid}.txt"

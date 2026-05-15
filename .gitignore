@@ -43,3 +43,19 @@ category_digest.py.bak.*
 category_digest.py.bad.*
 category_digest.py.broken.*
 category_digest.py.save
+
+# Sensitive runtime files
+.env
+youtube_cookies.txt
+bilibili_cookies.txt
+
+# Runtime caches and generated outputs
+audio_tmp/
+transcript_cache/
+transcripts/
+summaries/
+digest_archive/
+processed_videos.json
+search_state.json
+channel_cache.json
+logs/

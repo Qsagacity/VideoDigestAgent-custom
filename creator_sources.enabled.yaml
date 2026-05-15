@@ -1,0 +1,172 @@
+version: "0.1-enabled"
+updated_at: "2026-05-15"
+
+default_policy:
+  enabled_default: false
+  only_use_verified_sources: true
+  allow_supplement_only: false
+  min_title_similarity: 0.55
+
+creators:
+  - canonical_name: "Lex Fridman"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "Lex Fridman"
+    sources:
+      - type: "official_transcript_index"
+        url: "https://lexfridman.com/category/transcripts/"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "Tim Ferriss"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "Tim Ferriss"
+      - "The Tim Ferriss Show"
+    sources:
+      - type: "official_transcript_index"
+        url: "https://tim.blog/2018/09/20/all-transcripts-from-the-tim-ferriss-show/"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "Acquired"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "Acquired"
+      - "Acquired Podcast"
+    sources:
+      - type: "official_episode_index"
+        url: "https://www.acquired.fm/episodes"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "Dwarkesh Patel"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "Dwarkesh Patel"
+      - "Dwarkesh Podcast"
+    sources:
+      - type: "official_site"
+        url: "https://www.dwarkesh.com/"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "Decoder with Nilay Patel"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "Decoder with Nilay Patel"
+      - "Decoder"
+    sources:
+      - type: "official_site"
+        url: "https://www.theverge.com/decoder-podcast-with-nilay-patel"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "The Diary Of A CEO"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "The Diary Of A CEO"
+      - "The Diary Of A CEO with Steven Bartlett"
+    sources:
+      - type: "official_site"
+        url: "https://stevenbartlett.com/doac/"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "20VC with Harry Stebbings"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "20VC"
+      - "20VC with Harry Stebbings"
+      - "The Twenty Minute VC"
+    sources:
+      - type: "official_site"
+        url: "https://www.thetwentyminutevc.com/"
+        relation: "same_content"
+        risk_level: "low"
+      - type: "substack_podcast_page"
+        url: "https://20vc.substack.com/podcast"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "Bloomberg Technology"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "Bloomberg Technology"
+      - "Bloomberg Tech"
+    sources:
+      - type: "official_podcast_page"
+        url: "https://www.bloomberg.com/podcasts/series/bloomberg-technology"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "硅谷101"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "硅谷101"
+      - "硅谷101播客"
+      - "valley101podcast"
+    sources:
+      - type: "official_podcast_page"
+        url: "https://sv101.fireside.fm/"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "Zhang Xiaojun Podcast"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "Zhang Xiaojun Podcast"
+      - "张小珺"
+      - "张小珺Jùn"
+      - "张小珺商业访谈录"
+    sources:
+      - type: "xiaoyuzhou_podcast_page"
+        url: "https://www.xiaoyuzhoufm.com/podcast/626b46ea9cbbf0451cf5a962"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "小Lin说"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "小Lin说"
+    sources:
+      - type: "bilibili_space"
+        uid: "520819684"
+        url: "https://space.bilibili.com/520819684/"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "李自然说"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "李自然说"
+    sources:
+      - type: "bilibili_space"
+        uid: "39089748"
+        url: "https://space.bilibili.com/39089748/"
+        relation: "same_content"
+        risk_level: "low"
+
+  - canonical_name: "自说自话的总裁"
+    enabled: true
+    review_status: "verified"
+    youtube_match_names:
+      - "自说自话的总裁"
+    sources:
+      - type: "bilibili_space"
+        uid: "385805493"
+        url: "https://space.bilibili.com/385805493/"
+        relation: "same_content"
+        risk_level: "low"
