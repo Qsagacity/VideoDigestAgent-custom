@@ -59,3 +59,4 @@ processed_videos.json
 search_state.json
 channel_cache.json
 logs/
+backups/
